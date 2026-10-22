@@ -14,7 +14,7 @@
 Cloudflare's `@cloudflare/codemode` pattern — without a Cloudflare account.
 
 ```bash
-npx github:a-saeedia/codemode-node --stats
+npx -y https://github.com/a-saeedia/codemode-node/tarball/main --stats
 ```
 
 </div>
@@ -72,11 +72,13 @@ The model sees **one** tool. Everything else lives behind it.
 
 ```bash
 # audit your current setup first — no install, no config
-npx github:a-saeedia/codemode-node --stats
+npx -y https://github.com/a-saeedia/codemode-node/tarball/main --stats
 
 # run the server
-npx github:a-saeedia/codemode-node
+npx -y https://github.com/a-saeedia/codemode-node/tarball/main
 ```
+
+> No publish needed: npm fetches the repo tarball. Once the package is on npm this becomes `npx -y codemode-node`.
 
 <details>
 <summary><b>Claude Desktop / Claude Code</b></summary>
@@ -84,7 +86,7 @@ npx github:a-saeedia/codemode-node
 ```json
 {
   "mcpServers": {
-    "codemode": { "command": "npx", "args": ["-y", "github:a-saeedia/codemode-node"] }
+    "codemode": { "command": "npx", "args": ["-y", "https://github.com/a-saeedia/codemode-node/tarball/main"] }
   }
 }
 ```
@@ -98,7 +100,7 @@ npx github:a-saeedia/codemode-node
   "mcp": {
     "codemode": {
       "type": "local",
-      "command": ["npx", "-y", "github:a-saeedia/codemode-node"],
+      "command": ["npx", "-y", "https://github.com/a-saeedia/codemode-node/tarball/main"],
       "enabled": true
     }
   }
@@ -164,7 +166,7 @@ Auto-discovers the first of:
 Understands `mcpServers` (Claude), `mcp` (OpenCode), `servers` (VS Code), including JSONC comments and `{env:VAR}` interpolation.
 
 ```bash
-codemode-node --print-config   # what did it find?
+npx -y https://github.com/a-saeedia/codemode-node/tarball/main --print-config   # what did it find?
 ```
 
 | env | effect |
