@@ -1,0 +1,9 @@
+{
+  "mcp": {
+    "codemode": {
+      "type": "local",
+      "command": ["npx", "-y", "codemode-node"],
+      "enabled": true
+    }
+  }
+}

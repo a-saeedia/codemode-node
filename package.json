@@ -1,0 +1,41 @@
+{
+  "name": "codemode-node",
+  "version": "0.1.0",
+  "description": "Code Mode for Node â€” the missing NodeExecutor for @cloudflare/codemode, packaged as a one-tool MCP server",
+  "type": "module",
+  "license": "MIT",
+  "author": "Arman Saeedi",
+  "homepage": "https://github.com/a-saeedia/codemode-node#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/a-saeedia/codemode-node.git" },
+  "bugs": { "url": "https://github.com/a-saeedia/codemode-node/issues" },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "code-mode",
+    "codemode",
+    "cloudflare",
+    "ai-agents",
+    "tool-calling",
+    "llm",
+    "sandbox"
+  ],
+  "bin": { "codemode-node": "./src/cli.mjs" },
+  "exports": {
+    ".": "./src/executor.mjs",
+    "./server": "./src/server.mjs"
+  },
+  "files": ["src", "README.md", "LICENSE", "examples"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/cli.mjs",
+    "test": "node --test test/executor.test.mjs",
+    "test:integration": "node test/integration.mjs"
+  },
+  "dependencies": {
+    "@cfworker/json-schema": "^4.1.1",
+    "@cloudflare/codemode": "^0.5.5",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "cross-spawn": "^7.0.6",
+    "zod": "^4.6.7"
+  }
+}
