@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; background: #07090F; }
+      .card {
+        position: relative; width: 1280px; height: 640px; overflow: hidden;
+        background:
+          radial-gradient(900px 520px at 78% 28%, rgba(34,211,238,0.16) 0%, rgba(7,9,15,0) 65%),
+          radial-gradient(700px 400px at 10% 90%, rgba(242,193,78,0.08) 0%, rgba(7,9,15,0) 60%),
+          #07090F;
+        font-family: Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+        color: #E8EDF7;
+      }
+      .grid {
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(to right, #111a29 1px, transparent 1px),
+          linear-gradient(to bottom, #111a29 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(900px 600px at 50% 40%, #000 0%, transparent 85%);
+        -webkit-mask-image: radial-gradient(900px 600px at 50% 40%, #000 0%, transparent 85%);
+      }
+      .inner { position: absolute; inset: 0; padding: 96px 96px 80px; display: flex; flex-direction: column; }
+      .top { display: flex; align-items: center; gap: 34px; }
+      .word { font-size: 86px; font-weight: 700; letter-spacing: -3.5px; line-height: 1; }
+      .word span { color: #22D3EE; font-weight: 400; }
+      .tag { margin-top: 30px; font-size: 30px; line-height: 1.35; color: #7C8AA5; max-width: 980px; }
+      .tag b { color: #E8EDF7; font-weight: 600; }
+      .tag i { font-style: normal; color: #F2C14E; }
+      .chips { margin-top: 46px; display: flex; gap: 12px; }
+      .chip {
+        font: 15px/1 "JetBrains Mono", Consolas, monospace; color: #9FB0C9;
+        border: 1px solid #1E2A3F; background: rgba(16,24,39,0.85); border-radius: 999px; padding: 12px 20px;
+      }
+      .chip.hot { color: #22D3EE; border-color: #164E63; }
+      .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center;
+              font: 14px/1 "JetBrains Mono", Consolas, monospace; color: #3E4C63; }
+      .foot .url { color: #5C6B85; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="grid"></div>
+      <div class="inner">
+        <div class="top">
+          <svg width="132" height="132" viewBox="0 0 132 132" aria-hidden="true">
+            <defs>
+              <linearGradient id="m" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#22D3EE"/><stop offset="1" stop-color="#F2C14E"/>
+              </linearGradient>
+            </defs>
+            <g fill="none" stroke="url(#m)" stroke-width="2.2" stroke-linecap="round">
+              <path d="M10 18h34M10 42h34M10 66h34M10 90h34M10 114h34" opacity="0.16"/>
+              <path d="M44 18c26 0 26 48 46 48M44 42c26 0 26 24 46 24M44 66h46M44 90c26 0 26-24 46-24M44 114c26 0 26-48 46-48" opacity="0.6"/>
+              <circle cx="96" cy="66" r="10" fill="#F2C14E" stroke="none"/>
+              <circle cx="96" cy="66" r="19" opacity="0.45"/>
+            </g>
+            <g fill="#22D3EE" opacity="0.95">
+              <circle cx="10" cy="18" r="3.2"/><circle cx="10" cy="42" r="3.2"/><circle cx="10" cy="66" r="3.2"/>
+              <circle cx="10" cy="90" r="3.2"/><circle cx="10" cy="114" r="3.2"/>
+            </g>
+          </svg>
+          <div class="word">codemode<span>-node</span></div>
+        </div>
+
+        <div class="tag">One MCP tool instead of <b>a hundred</b>.<br>Cloudflare's Code Mode, <i>without a Cloudflare account</i>.</div>
+
+        <div class="chips">
+          <div class="chip hot">113 tools → 1</div>
+          <div class="chip">43,602 → 1,631 tokens / request</div>
+          <div class="chip">MIT</div>
+          <div class="chip">node ≥ 20</div>
+        </div>
+
+        <div class="foot">
+          <span class="url">github.com/a-saeedia/codemode-node</span>
+          <span>npm i codemode-node</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
