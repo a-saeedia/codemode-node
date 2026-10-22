@@ -1,29 +1,40 @@
-# codemode-node
+<div align="center">
 
-**Code Mode for Node.** One MCP tool instead of a hundred.
+<img src="assets/banner.svg" alt="codemode-node — one tool, every tool" width="100%">
 
-Cloudflare's [`@cloudflare/codemode`](https://www.npmjs.com/package/@cloudflare/codemode) turns an MCP server into a single `code` tool: the model writes one JavaScript program that calls all your tools, instead of one tool call per step. It ships an executor for Cloudflare Workers — which means you need a Workers account to use a pattern that runs fine on a laptop.
+<br>
 
-This is the missing **Node executor**, plus a ready-to-run MCP server around it.
+[![CI](https://github.com/a-saeedia/codemode-node/actions/workflows/ci.yml/badge.svg)](https://github.com/a-saeedia/codemode-node/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-22D3EE.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%E2%89%A520-3B82F6.svg)](package.json)
+[![MCP](https://img.shields.io/badge/MCP-stdio-F2C14E.svg)](https://modelcontextprotocol.io)
+[![stars](https://img.shields.io/github/stars/a-saeedia/codemode-node?style=flat&color=22D3EE)](https://github.com/a-saeedia/codemode-node/stargazers)
+
+**Code Mode for Node.** One MCP tool instead of a hundred.<br>
+Cloudflare's `@cloudflare/codemode` pattern — without a Cloudflare account.
 
 ```bash
-npx -y codemode-node
+npx github:a-saeedia/codemode-node --stats
 ```
+
+</div>
 
 ---
 
-## The problem
+## The 10-second version
 
-Every MCP server you connect injects its tool schemas into every request. Measured on a normal dev setup with 8 servers:
+Your agent re-reads every tool schema on **every single request**. Eight ordinary MCP servers:
 
-| | tools | schema bytes | ~tokens / request |
-|---|---|---|---|
+<img src="assets/stats.svg" alt="43,602 tokens without codemode, 1,631 with" width="100%">
+
+| | tools | schema bytes | tokens / request |
+|---|---:|---:|---:|
 | 8 MCP servers | 113 | 174,406 | **43,602** |
-| this server | 1 | 6,524 | **1,631** |
+| codemode-node | 1 | 6,524 | **1,631** |
 
-That is **26× less context before you type a word** — and it grows with every server you add. `github` alone was 120 KB of it.
+That's **26.7× less context**, paid once per turn, before the model has done anything. It gets worse with every server you install. In one measured setup, `github` alone was 120 KB.
 
-Code Mode replaces that with one tool. The model writes:
+With Code Mode the model writes one program instead of making one call per step:
 
 ```js
 const repos = await codemode.fs_glob({ pattern: '*/package.json' });
@@ -35,30 +46,13 @@ for (const f of repos) {
 return { total: repos.length, stale };
 ```
 
-…instead of a dozen round trips, each re-sending every schema and dumping raw output into the conversation.
+Same job. One round trip. A 145-byte answer instead of 41 KB of raw JSON.
 
-## Measured
+## Why this exists
 
-Same task, both ways, 3 runs, median:
+[`@cloudflare/codemode`](https://github.com/cloudflare/agents/tree/main/packages/codemode) turns any MCP server into a single `code` tool. It ships exactly one executor: `DynamicWorkerExecutor`, which needs a Workers `LOADER` binding. A pattern that runs fine on a laptop, gated behind a cloud account.
 
-| | round trips | payload to model | ~tokens | local wall |
-|---|---|---|---|---|
-| 5 discrete tool calls | 5 | 41,812 B | 10,453 | 2,240 ms |
-| one `code` call | **1** | **145 B** | **36** | 2,733 ms |
-
-The `code` path is ~0.5 s slower locally (IPC + child spawn) and 288× smaller in what reaches the model. Since each avoided round trip costs a full model call, end-to-end it wins by seconds per task.
-
-## How it works
-
-```
-agent ──stdio──▶ codemode-node
-                    └─ codeMcpServer()            ← Cloudflare's package
-                         ├─ upstream McpServer    ← host tools (zod schemas)
-                         └─ NodeExecutor          ← this repo (implements Executor)
-                              └─ node child       ← sandbox, fresh per call
-```
-
-`Executor` is a documented extension point in `@cloudflare/codemode`:
+`Executor` is a public extension point:
 
 ```ts
 interface Executor {
@@ -66,92 +60,162 @@ interface Executor {
 }
 ```
 
-So Cloudflare generates the TypeScript declarations from your tool schemas, owns the `code` tool description, result unwrapping and truncation. This repo only supplies the sandbox.
+This package implements it on a child process, and wraps the result in a ready-to-use stdio server. Cloudflare still owns the type generation, the tool description, the unwrapping and the truncation — none of that is reimplemented here.
 
-## Quick start
+## How it works
+
+<img src="assets/architecture.svg" alt="agent → one code tool → host tools + NodeExecutor → node child" width="100%">
+
+The model sees **one** tool. Everything else lives behind it.
+
+## Install
 
 ```bash
-npx -y codemode-node --print-config   # what did it find?
-npx -y codemode-node                  # stdio MCP server
+# audit your current setup first — no install, no config
+npx github:a-saeedia/codemode-node --stats
+
+# run the server
+npx github:a-saeedia/codemode-node
 ```
 
-Wire it in:
-
-**Claude Desktop / Claude Code** (`claude_desktop_config.json` or `.mcp.json`)
+<details>
+<summary><b>Claude Desktop / Claude Code</b></summary>
 
 ```json
 {
   "mcpServers": {
-    "codemode": { "command": "npx", "args": ["-y", "codemode-node"] }
+    "codemode": { "command": "npx", "args": ["-y", "github:a-saeedia/codemode-node"] }
   }
 }
 ```
+</details>
 
-**OpenCode**
+<details>
+<summary><b>OpenCode</b></summary>
 
 ```jsonc
 {
   "mcp": {
-    "codemode": { "type": "local", "command": ["npx", "-y", "codemode-node"], "enabled": true }
+    "codemode": {
+      "type": "local",
+      "command": ["npx", "-y", "github:a-saeedia/codemode-node"],
+      "enabled": true
+    }
   }
 }
 ```
+</details>
 
-**Cursor / VS Code** — same shape under `servers`.
+<details>
+<summary><b>Cursor / VS Code</b></summary>
 
-Then disable the MCP servers you no longer want to advertise. They stay reachable through `codemode.mcp_call({ server, tool, args })`.
+Same shape as Claude Desktop, under `servers` in `.vscode/mcp.json` or `mcpServers` in `.mcp.json`.
+</details>
 
-## Config
+Then turn off the servers you no longer want advertised. **They stay reachable** through `codemode.mcp_call({ server, tool, args })` — disabled means "not advertised", not "unavailable".
 
-It auto-discovers the first of:
+## The audit
 
-1. `--config <path>` / `CODEMODE_CONFIG`
-2. `./.mcp.json`
-3. `~/.config/opencode/opencode.jsonc` (and the Windows location)
-4. Claude Desktop config (all three platforms)
+`--stats` reads your real config, boots each server, and measures the schemas you are actually shipping to the model:
 
-It understands `mcpServers` (Claude), `mcp` (OpenCode) and `servers` (VS Code), including JSONC comments. Servers with `enabled: false` are **still pooled** — disabled means "not advertised", not "unavailable".
+```
+  server                    tools     bytes   tokens
+  ----------------------------------------------------------------------------
+  · higgsfield                 48    182757    45689  ██████████████████████████████
+    github                     44    120572    30143  ████████████████████
+    director                   26     19725     4931  ███
+  · playwright                 24     18502     4626  ███
+  ...
+  ----------------------------------------------------------------------------
+  TOTAL POOLED                282    441280   110320
+
+  · = not advertised (still reachable through codemode.mcp_call)
+
+  ADVERTISED: 113 tools, 174,406 bytes ≈ 43,602 tokens
+  WITH CODEMODE: 1 tool ≈ 1,631 tokens
+```
+
+`--stats --json` for machines.
 
 ## Sandbox API
 
-Everything takes a single object argument and returns JSON.
+Every function takes a single object and returns JSON. Available as one `codemode` namespace inside the sandbox.
 
-| namespace | functions |
+| group | functions |
 |---|---|
-| `codemode` | `shell`, `fs_read`, `fs_write`, `fs_append`, `fs_exists`, `fs_stat`, `fs_list`, `fs_glob`, `fs_grep`, `fs_remove`, `fs_mkdir`, `http`, `http_json` |
-| `codemode` | `mcp_list`, `mcp_tools`, `mcp_call` — any pooled server |
-| `codemode` | `cf_get`, `cf_post`, `cf_patch`, `cf_put`, `cf_del`, `cf_request` — only when `CLOUDFLARE_API_TOKEN` is set |
-| `codemode` | `moli_fetch` — only when `MOLI_BIN` is set |
+| shell / files | `shell`, `fs_read`, `fs_write`, `fs_append`, `fs_exists`, `fs_stat`, `fs_list`, `fs_glob`, `fs_grep`, `fs_remove`, `fs_mkdir` |
+| network | `http`, `http_json` |
+| MCP | `mcp_list`, `mcp_tools`, `mcp_call` — any pooled server |
+| Cloudflare | `cf_get`, `cf_post`, `cf_patch`, `cf_put`, `cf_del`, `cf_request` — only when `CLOUDFLARE_API_TOKEN` is set |
+| Moli | `moli_fetch` — only when `MOLI_BIN` is set |
 | globals | `sleep(ms)`, `env`, `ROOT`, `log()` |
 
-Return a small summary. `console.log` is captured but **not** returned — anything you don't return is discarded, which is the point.
+Return a small summary. **Anything you don't return is discarded** — that's the entire point. `console.log` is captured but never sent back, so put progress in the returned value.
 
-## Security model
+## Config
 
-Read this before pointing it at anything untrusted.
+Auto-discovers the first of:
 
-- Each call runs in a **fresh Node child process** that exits afterwards. No state persists between calls.
-- The sandbox is `node:vm` with no `require`, no `import`, no `process`, no filesystem. Its only capabilities are the proxies you can see.
-- **`node:vm` is not a security boundary.** A determined escape is possible, and host functions will happily run whatever you ask: `shell` is a shell, `fs_write` writes, `http` reaches the network. The isolation is *capability* isolation, not a jail.
-- Treat it as: **the model can do anything you could do in a terminal.** That is the deal with every coding agent. If you need a real boundary, run this inside a container/VM.
+1. `--config <path>` or `CODEMODE_CONFIG`
+2. `./.mcp.json`
+3. `~/.config/opencode/opencode.jsonc` (and the Windows path)
+4. Claude Desktop config, all three platforms
+
+Understands `mcpServers` (Claude), `mcp` (OpenCode), `servers` (VS Code), including JSONC comments and `{env:VAR}` interpolation.
+
+```bash
+codemode-node --print-config   # what did it find?
+```
+
+| env | effect |
+|---|---|
+| `CODEMODE_ROOT` | base dir for relative fs paths (default: home) |
+| `CODEMODE_TIMEOUT_MS` | sandbox wall-clock limit (default 120000) |
+| `CODEMODE_DEBUG=1` | forward pooled-server stderr |
+| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | enables `cf_*` |
+| `MOLI_BIN` | enables `moli_fetch` |
+
+## Security
+
+Read this before pointing it at anything you don't trust.
+
+- Each call runs in a **fresh Node child process** that exits afterwards. No state carries over.
+- The sandbox is `node:vm` with **no** `require`, `import`, `process`, or filesystem. Its only capabilities are the proxies listed above.
+- **`node:vm` is not a security boundary.** A determined escape exists, and the host functions really do things: `shell` is a shell, `fs_write` writes, `http` reaches the network.
+- The model can therefore do **anything you could do in a terminal.** That is the same deal every coding agent makes. If you need a real boundary, run it inside a container.
 
 No secrets are read from disk. Credentials come from the environment only.
 
 ## Limitations
 
-- **No streaming.** The result arrives once, at the end. Long jobs look like a hang; keep them under the timeout and return progress.
-- **One interpreter, no TypeScript.** Plain JS only.
-- **`console.log` is dropped** by the wrapping package — return your progress instead.
-- **Cold start** is ~1.5 s (MCP SDK + zod + type generation), then ~250–500 ms per call.
-- **Only stdio** on the server side. Upstream servers can be stdio or HTTP.
+- **No streaming.** One result, at the end. Long jobs look like a hang.
+- **Plain JavaScript.** No TypeScript, no imports.
+- **`console.log` is dropped** by the wrapping package — return your progress.
+- Cold start ~1.5 s, then ~250–500 ms per call (child spawn + IPC).
+- stdio only on the server side; upstream servers can be stdio or HTTP.
+
+## Benchmarks
+
+Same task both ways, 3 runs, median, Windows 11 / Node 22:
+
+| | round trips | payload to model | tokens | local wall |
+|---|---:|---:|---:|---:|
+| 5 discrete tool calls | 5 | 41,812 B | 10,453 | 2,240 ms |
+| one `code` call | **1** | **145 B** | **36** | 2,733 ms |
+
+The `code` path is ~0.5 s slower locally and **288× smaller** in what reaches the model. Each avoided round trip is a full model call, so end-to-end it wins by seconds per task.
+
+## What this is not
+
+- **Not a new protocol.** It's Cloudflare's package with the missing executor.
+- **Not a sandbox vendor.** It's capability isolation, not a jail.
+- **Not for Workers.** If you're on Cloudflare, use `DynamicWorkerExecutor` — a real isolate, strictly better than this.
 
 ## Related
 
-- [`@cloudflare/codemode`](https://github.com/cloudflare/agents/tree/main/packages/codemode) — the pattern and the Workers executor. This package depends on it and adds nothing to the protocol.
+- [`@cloudflare/codemode`](https://github.com/cloudflare/agents/tree/main/packages/codemode) — the pattern, the Workers executor, the type generator.
 - [`universal-tool-calling-protocol/code-mode`](https://github.com/universal-tool-calling-protocol/code-mode) — protocol-agnostic Code Mode (MCP + OpenAPI + native tools).
-
-If you're on Cloudflare Workers, use their `DynamicWorkerExecutor` — it's a real isolate and strictly better than this.
 
 ## License
 
-MIT © Arman Saeedi
+MIT © [Arman Saeedi](https://github.com/a-saeedia)

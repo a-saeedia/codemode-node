@@ -46,9 +46,9 @@ export function discoverConfig(explicit) {
 
 function normalize(name, def) {
   if (!def || typeof def !== 'object') return null;
-  if (def.enabled === false) return { ...def, enabled: false };
+  const enabled = def.enabled !== false;
   const url = def.url || def.serverUrl;
-  if (url) return { url, headers: def.headers || {}, enabled: true };
+  if (url) return { url, headers: def.headers || {}, enabled };
   let command = def.command;
   if (typeof command === 'string') command = [command, ...(def.args || [])];
   if (!Array.isArray(command) || !command.length) return null;
@@ -56,7 +56,7 @@ function normalize(name, def) {
     command,
     environment: def.environment || def.env || {},
     cwd: def.cwd,
-    enabled: true,
+    enabled,
   };
 }
 
