@@ -85,7 +85,14 @@ if (args.includes('--stats')) {
     process.exit(0);
   }
 
-  process.stdout.write(`\n  ${pool.configPath || '(no config found)'}\n\n`);
+  if (!pool.configPath) {
+    process.stdout.write(
+      '\n  no MCP config found. Pass --config <path> or create ~/.mcp.json.\n\n',
+    );
+    process.exit(0);
+  }
+
+  process.stdout.write(`\n  ${pool.configPath}\n\n`);
   process.stdout.write(`  ${pad('server', 25)}${num('tools', 6)}${num('bytes', 10)}${num('tokens', 9)}  \n`);
   process.stdout.write(`  ${'-'.repeat(76)}\n`);
   for (const r of rows) {
