@@ -2,7 +2,7 @@
   "mcp": {
     "codemode": {
       "type": "local",
-      "command": ["npx", "-y", "codemode-node"],
+      "command": ["npx", "-y", "node-code-mode"],
       "enabled": true
     }
   }

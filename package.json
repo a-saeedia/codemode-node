@@ -1,17 +1,17 @@
 {
-  "name": "codemode-node",
-  "version": "0.1.0",
+  "name": "node-code-mode",
+  "version": "0.1.1",
   "description": "One MCP tool in front of all your MCP servers. Cloudflare Code Mode, running on Node.",
   "type": "module",
   "license": "MIT",
   "author": "Arman Saeedi",
-  "homepage": "https://github.com/a-saeedia/codemode-node#readme",
+  "homepage": "https://github.com/a-saeedia/node-code-mode#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/a-saeedia/codemode-node.git"
+    "url": "git+https://github.com/a-saeedia/node-code-mode.git"
   },
   "bugs": {
-    "url": "https://github.com/a-saeedia/codemode-node/issues"
+    "url": "https://github.com/a-saeedia/node-code-mode/issues"
   },
   "keywords": [
     "mcp",
@@ -25,7 +25,7 @@
     "sandbox"
   ],
   "bin": {
-    "codemode-node": "src/cli.mjs"
+    "node-code-mode": "src/cli.mjs"
   },
   "exports": {
     ".": "./src/executor.mjs",

@@ -11,10 +11,10 @@ const flag = (name) => {
 };
 
 if (args.includes('--help') || args.includes('-h')) {
-  process.stdout.write(`codemode-node — Code Mode for Node (one MCP tool instead of N)
+  process.stdout.write(`node-code-mode — Code Mode for Node (one MCP tool instead of N)
 
 Usage:
-  codemode-node [--config <path>] [--timeout <ms>] [--print-config]
+  node-code-mode [--config <path>] [--timeout <ms>] [--print-config]
 
   --config <path>   MCP servers config (.mcp.json / opencode.jsonc / claude_desktop_config.json)
   --timeout <ms>    sandbox wall-clock limit (default 120000, or CODEMODE_TIMEOUT_MS)
@@ -31,7 +31,7 @@ Env:
   CODEMODE_DEBUG=1     forward pooled-server stderr
 
 Wire it into an MCP client over stdio, e.g. Claude Desktop:
-  { "mcpServers": { "codemode": { "command": "npx", "args": ["-y", "codemode-node"] } } }
+  { "mcpServers": { "codemode": { "command": "npx", "args": ["-y", "node-code-mode"] } } }
 `);
   process.exit(0);
 }

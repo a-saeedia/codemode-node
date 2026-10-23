@@ -2,7 +2,7 @@
   "mcpServers": {
     "codemode": {
       "command": "npx",
-      "args": ["-y", "codemode-node"]
+      "args": ["-y", "node-code-mode"]
     }
   }
 }

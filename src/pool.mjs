@@ -9,6 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import readline from 'node:readline';
 import crossSpawn from 'cross-spawn';
+import { VERSION } from './version.mjs';
 
 export function stripJsonc(src) {
   let out = '', i = 0, inStr = false, inLine = false, inBlock = false;
@@ -112,7 +113,7 @@ class StdioClient {
       });
       proc.on('error', (e) => reject(e));
       const t = setTimeout(() => reject(new Error(`${this.name} start timeout`)), 30_000);
-      this.req('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'codemode-node', version: '0.1.0' } })
+      this.req('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'node-code-mode', version: VERSION } })
         .then((r) => { clearTimeout(t); this.notify('notifications/initialized'); resolve(r); })
         .catch((e) => { clearTimeout(t); reject(e); });
     });
@@ -170,7 +171,7 @@ class HttpClient {
   }
   async start() {
     if (this.ready) return this.ready;
-    this.ready = this.post({ jsonrpc: '2.0', id: ++this.id, method: 'initialize', params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'codemode-node', version: '0.1.0' } } });
+    this.ready = this.post({ jsonrpc: '2.0', id: ++this.id, method: 'initialize', params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'node-code-mode', version: VERSION } } });
     await this.ready;
     await this.post({ jsonrpc: '2.0', method: 'notifications/initialized' });
     return this.ready;

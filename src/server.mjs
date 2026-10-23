@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// codemode-node — Code Mode for Node.
+// node-code-mode — Code Mode for Node.
 //
 //   agent -> this server (stdio) -> one `code` tool
 //                                -> host tools (shell/fs/http/mcp/cf/moli)
@@ -10,8 +10,7 @@ import { codeMcpServer } from '@cloudflare/codemode/mcp';
 import { NodeExecutor } from './executor.mjs';
 import { registerHostTools } from './host.mjs';
 import { createPool } from './pool.mjs';
-
-const VERSION = '0.1.0';
+import { VERSION } from './version.mjs';
 
 const DESCRIPTION = `Execute one JavaScript program that achieves the whole goal. This replaces chains of separate tool calls: one call here does the work of N, and intermediate data never enters your context.
 
@@ -47,5 +46,5 @@ process.on('exit', shutdown);
 
 const n = pool.names().length;
 process.stderr.write(
-  `[codemode-node] v${VERSION} up — 1 tool, ${n} MCP server(s) pooled${n ? ` from ${pool.configPath}` : ' (no config found)'}\n`,
+  `[node-code-mode] v${VERSION} up — 1 tool, ${n} MCP server(s) pooled${n ? ` from ${pool.configPath}` : ' (no config found)'}\n`,
 );

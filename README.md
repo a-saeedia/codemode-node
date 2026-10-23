@@ -1,14 +1,14 @@
-# codemode-node
+# node-code-mode
 
-[![CI](https://github.com/a-saeedia/codemode-node/actions/workflows/ci.yml/badge.svg)](https://github.com/a-saeedia/codemode-node/actions/workflows/ci.yml)
+[![CI](https://github.com/a-saeedia/node-code-mode/actions/workflows/ci.yml/badge.svg)](https://github.com/a-saeedia/node-code-mode/actions/workflows/ci.yml)
 
 One MCP tool in front of all your MCP servers. Cloudflare's [Code Mode](https://github.com/cloudflare/agents/tree/main/packages/codemode) pattern, running on Node instead of Workers.
 
 ```sh
-npx -y https://github.com/a-saeedia/codemode-node/tarball/main --stats
+npx -y node-code-mode --stats
 ```
 
-Status: works, unpolished, running on my own machine. npm publish pending, hence the tarball URL.
+Status: published on npm, running on my own machine. Unpolished in places, but every number below was measured on a real config.
 
 ## The problem
 
@@ -16,7 +16,7 @@ Every MCP server you connect gets its schemas pasted into the context on every r
 
 ```
 8 MCP servers      113 tools   174,406 bytes   ~43,602 tokens
-codemode-node        1 tool      6,524 bytes    ~1,631 tokens
+node-code-mode       1 tool      6,524 bytes    ~1,631 tokens
 ```
 
 43k tokens before the model has done anything, and it grows with each server you install (`github` alone was 120 KB). The `--stats` command below measures your own config instead of trusting mine.
@@ -38,7 +38,7 @@ One round trip, one small object back. Everything else stays on disk and in the 
 ## Install
 
 ```sh
-npx -y https://github.com/a-saeedia/codemode-node/tarball/main
+npx -y node-code-mode
 ```
 
 Claude Desktop / Claude Code:
@@ -48,7 +48,7 @@ Claude Desktop / Claude Code:
   "mcpServers": {
     "codemode": {
       "command": "npx",
-      "args": ["-y", "https://github.com/a-saeedia/codemode-node/tarball/main"]
+      "args": ["-y", "node-code-mode"]
     }
   }
 }
@@ -61,7 +61,7 @@ OpenCode:
   "mcp": {
     "codemode": {
       "type": "local",
-      "command": ["npx", "-y", "https://github.com/a-saeedia/codemode-node/tarball/main"],
+      "command": ["npx", "-y", "node-code-mode"],
       "enabled": true
     }
   }
@@ -123,7 +123,7 @@ Looks for the first of these:
 It reads `mcpServers` (Claude), `mcp` (OpenCode) and `servers` (VS Code), including JSONC comments and `{env:VAR}` interpolation.
 
 ```sh
-npx -y https://github.com/a-saeedia/codemode-node/tarball/main --print-config
+npx -y node-code-mode --print-config
 ```
 
 | env | effect |
