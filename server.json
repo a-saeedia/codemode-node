@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.a-saeedia/node-code-mode",
+  "description": "One MCP tool in front of every configured MCP server. The model writes one JavaScript program per task instead of calling N tools, so tool schemas stay out of the context window.",
+  "version": "0.1.3",
+  "repository": {
+    "url": "https://github.com/a-saeedia/node-code-mode",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "node-code-mode",
+      "version": "0.1.3",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

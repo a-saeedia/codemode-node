@@ -1,0 +1,42 @@
+name: publish
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:integration
+      - run: npm publish --access public --provenance
+
+  registry:
+    needs: npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: publish to the MCP registry
+        run: |
+          for i in 1 2 3 4 5; do
+            curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" -o /tmp/publisher.tgz && break
+            sleep 5
+          done
+          tar -xzf /tmp/publisher.tgz -C /tmp
+          for i in 1 2 3 4 5; do
+            /tmp/mcp-publisher publish && exit 0
+            echo "retry $i"
+            sleep 15
+          done
+          exit 1
