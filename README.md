@@ -8,7 +8,7 @@ One MCP tool in front of all your MCP servers. Cloudflare's [Code Mode](https://
 npx -y https://github.com/a-saeedia/codemode-node/tarball/main --stats
 ```
 
-Status: works, unpolished, used daily. npm publish pending, hence the tarball URL.
+Status: works, unpolished, running on my own machine. npm publish pending, hence the tarball URL.
 
 ## The problem
 
@@ -90,6 +90,8 @@ Then stop advertising the servers you don't want in context. They remain reachab
 
   ADVERTISED: 113 tools, 174,406 bytes ≈ 43,602 tokens
   WITH CODEMODE: 1 tool ≈ 1,631 tokens
+
+  You are paying ~43,602 tokens per turn for tools you did not call.
 ```
 
 `--stats --json` for anything that isn't a human.
