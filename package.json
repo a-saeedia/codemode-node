@@ -1,6 +1,6 @@
 {
   "name": "node-code-mode",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "One MCP tool in front of all your MCP servers. Cloudflare Code Mode, running on Node.",
   "type": "module",
   "license": "MIT",
